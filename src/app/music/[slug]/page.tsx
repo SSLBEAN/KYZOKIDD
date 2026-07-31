@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { SiteHeader } from "@/components/SiteHeader";
+import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import type { Release } from "@/lib/types";
 
@@ -34,7 +34,7 @@ export default async function ReleasePage({
 
   return (
     <>
-      <SiteHeader />
+      <SiteNav />
       <section className="px-6 md:px-10 pt-32 md:pt-40 pb-24 max-w-4xl mx-auto">
         <Link href="/#music" className="text-bone-dim hover:text-bone text-sm">
           ← Back to Music

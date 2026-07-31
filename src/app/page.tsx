@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { SiteHeader } from "@/components/SiteHeader";
+import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Marquee } from "@/components/Marquee";
+import { PhotoGallery } from "@/components/PhotoGallery";
 import type { Product, Release, Show, Video } from "@/lib/types";
 
 const FALLBACK_TICKER = [
@@ -72,50 +73,31 @@ export default async function Home() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteNav />
 
-      {/* HERO */}
-      <section className="relative h-screen flex items-end">
+      {/* HERO — full bleed, minimal chrome, cinematic */}
+      <section className="relative h-screen">
         <Image
           src="/images/hero.jpg"
           alt="Kyzo Kidd"
           fill
           priority
-          className="object-cover object-[center_20%] -z-10"
+          className="object-cover object-[center_18%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/35 to-bg/55 -z-10" />
-        <div className="px-6 md:px-10 pb-16 md:pb-20 w-full">
-          <div className="flex items-center gap-2.5 font-mono-brand text-xs tracking-[3px] text-gold uppercase mb-4">
-            <span className="w-6 h-px bg-gold" />
-            New Jersey · RNF ★ Real Never Fail
-          </div>
-          <h1 className="font-display uppercase leading-[0.85] tracking-tight text-[15vw] md:text-[9vw] drop-shadow-[0_4px_40px_rgba(0,0,0,0.6)]">
-            Turning
-            <br />
-            Pain{" "}
-            <span className="text-transparent [-webkit-text-stroke:1.5px_#ede8e0]">
-              Into
-            </span>
-            <br />
-            Power
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/10 to-bg/50" />
+        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 pb-10 md:pb-14">
+          <h1 className="font-display uppercase leading-[0.82] tracking-tight text-[16vw] md:text-[8vw] drop-shadow-[0_4px_50px_rgba(0,0,0,0.7)]">
+            Kyzo Kidd
           </h1>
-          <p className="max-w-lg mt-6 text-bone-dim text-[15px] leading-relaxed">
-            Kyzo Kidd fuses hip-hop, R&amp;B, and pop into a sound built from
-            heartbreak, resilience, and self-empowerment. The sixth studio
-            project is on the way.
-          </p>
-          <div className="flex gap-4 mt-9">
+          <div className="flex justify-between items-end mt-3">
+            <p className="font-mono-brand text-[11px] md:text-sm tracking-[2px] text-bone-dim uppercase">
+              New Jersey · RNF ★ Real Never Fail
+            </p>
             <Link
               href="#music"
-              className="bg-blood hover:bg-blood-bright transition-colors px-7 py-3.5 text-xs tracking-wider uppercase font-semibold rounded-sm"
+              className="hidden md:block font-mono-brand text-xs tracking-wider uppercase text-bone-dim hover:text-bone transition-colors"
             >
-              Hear the Music
-            </Link>
-            <Link
-              href="#press"
-              className="border border-bone/40 backdrop-blur-sm px-7 py-3.5 text-xs tracking-wider uppercase rounded-sm hover:border-bone transition-colors"
-            >
-              Press Kit / EPK
+              Scroll ↓
             </Link>
           </div>
         </div>
@@ -123,13 +105,16 @@ export default async function Home() {
 
       <Marquee items={ticker} />
 
+      {/* PHOTO GALLERY — OVO-style mosaic */}
+      <PhotoGallery />
+
       {/* MUSIC */}
-      <section id="music" className="px-6 md:px-10 py-24 md:py-32">
-        <div className="flex justify-between items-end mb-14 border-b border-line pb-5">
-          <h2 className="font-display uppercase text-4xl md:text-5xl tracking-tight">
+      <section id="music" className="px-6 md:px-10 py-20 md:py-28">
+        <div className="flex justify-between items-end mb-12 border-b border-line pb-5">
+          <h2 className="font-display uppercase text-4xl md:text-6xl tracking-tight">
             Music
           </h2>
-          <span className="font-mono-brand text-bone-dim text-sm">Catalog / 01</span>
+          <span className="font-mono-brand text-bone-dim text-sm">01</span>
         </div>
         <div className="max-w-3xl">
           {releases.length === 0 && (
@@ -158,24 +143,21 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" className="px-6 md:px-10 py-24 md:py-32">
-        <div className="flex justify-between items-end mb-14 border-b border-line pb-5">
-          <h2 className="font-display uppercase text-4xl md:text-5xl tracking-tight">
-            About
-          </h2>
-          <span className="font-mono-brand text-bone-dim text-sm">Bio / 02</span>
+      {/* ABOUT — full bleed photo left, copy right, no boxed border */}
+      <section id="about" className="grid md:grid-cols-2">
+        <div className="relative aspect-square md:aspect-auto md:min-h-[600px]">
+          <Image
+            src="/images/about.jpg"
+            alt="Kyzo Kidd portrait"
+            fill
+            className="object-cover object-[center_15%]"
+          />
         </div>
-        <div className="grid md:grid-cols-[0.9fr_1.1fr] gap-16 items-center">
-          <div className="relative aspect-[4/5] border border-line overflow-hidden">
-            <Image
-              src="/images/about.jpg"
-              alt="Kyzo Kidd portrait"
-              fill
-              className="object-cover object-[center_15%]"
-            />
-          </div>
-          <div className="space-y-5 text-bone-dim text-base leading-[1.85]">
+        <div className="flex flex-col justify-center px-6 md:px-14 py-16 md:py-0">
+          <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold mb-5">
+            About / 02
+          </span>
+          <div className="space-y-5 text-bone-dim text-base leading-[1.85] max-w-md">
             <p>
               With a fearless commitment to truth and raw emotion,{" "}
               <strong className="text-bone font-semibold">Kyzo Kidd</strong> is
@@ -220,15 +202,15 @@ export default async function Home() {
 
       {/* VIDEOS */}
       {featuredVideo && (
-        <section id="videos" className="px-6 md:px-10 py-24 md:py-32">
-          <div className="flex justify-between items-end mb-14 border-b border-line pb-5">
-            <h2 className="font-display uppercase text-4xl md:text-5xl tracking-tight">
+        <section id="videos" className="px-6 md:px-10 py-20 md:py-28">
+          <div className="flex justify-between items-end mb-12 border-b border-line pb-5">
+            <h2 className="font-display uppercase text-4xl md:text-6xl tracking-tight">
               Videos
             </h2>
-            <span className="font-mono-brand text-bone-dim text-sm">Visuals / 03</span>
+            <span className="font-mono-brand text-bone-dim text-sm">03</span>
           </div>
           <div className="grid md:grid-cols-[1.3fr_1fr] gap-6">
-            <div className="relative aspect-video border border-line overflow-hidden">
+            <div className="relative aspect-video overflow-hidden">
               <iframe
                 src={`https://www.youtube.com/embed/${featuredVideo.youtube_video_id}`}
                 title={featuredVideo.title}
@@ -243,13 +225,13 @@ export default async function Home() {
                   href={`https://www.youtube.com/watch?v=${v.youtube_video_id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative aspect-video border border-line overflow-hidden block group"
+                  className="relative aspect-video overflow-hidden block group"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`https://img.youtube.com/vi/${v.youtube_video_id}/hqdefault.jpg`}
                     alt={v.title}
-                    className="w-full h-full object-cover brightness-75 group-hover:brightness-90 transition-all"
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                   />
                   <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-blood/85 flex items-center justify-center text-sm">
                     ▶
@@ -264,39 +246,33 @@ export default async function Home() {
         </section>
       )}
 
-      {/* PRESS / CONTACT */}
-      <section id="press" className="grid md:grid-cols-2 gap-px bg-line">
-        <div className="relative bg-bg p-10 md:p-12 min-h-[280px] flex flex-col justify-between overflow-hidden">
-          <Image
-            src="/images/press.jpg"
-            alt=""
-            fill
-            className="object-cover object-[center_20%] -z-10 opacity-40"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-bg/40 to-bg/90 -z-10" />
-          <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
-            Press / EPK
-          </span>
+      {/* PRESS / CONTACT — full bleed photo strip */}
+      <section id="press" className="relative min-h-[50vh] flex items-end">
+        <Image
+          src="/images/press.jpg"
+          alt=""
+          fill
+          className="object-cover object-[center_20%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-bg/10" />
+        <div className="relative px-6 md:px-10 pb-16 grid md:grid-cols-2 gap-10 w-full">
           <div>
-            <h3 className="font-display text-2xl mb-4">
+            <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
+              Press / EPK
+            </span>
+            <h3 className="font-display text-3xl mt-3">
               One-sheet, photos, contact
             </h3>
-            <span className="text-bone-dim text-sm">
-              Reach out for the full press kit →
-            </span>
           </div>
-        </div>
-        <div className="bg-bg p-10 md:p-12 min-h-[280px] flex flex-col justify-between">
-          <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
-            Contact
-          </span>
           <div>
-            <h3 className="font-display text-2xl mb-4">Booking &amp; inquiries</h3>
+            <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
+              Booking &amp; Inquiries
+            </span>
             <a
               href="mailto:kyzokiddmusic@gmail.com"
-              className="text-bone-dim hover:text-bone text-sm"
+              className="block font-display text-3xl mt-3 hover:text-blood-bright transition-colors"
             >
-              kyzokiddmusic@gmail.com →
+              kyzokiddmusic@gmail.com
             </a>
           </div>
         </div>
@@ -305,19 +281,19 @@ export default async function Home() {
       {/* SHOWS */}
       <section
         id="shows"
-        className="px-6 md:px-10 py-24 md:py-32 relative"
+        className="px-6 md:px-10 py-20 md:py-28 relative"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(10,10,10,0.88), rgba(10,10,10,0.96)), url(/images/shows-bg.jpg)",
+            "linear-gradient(rgba(10,10,10,0.9), rgba(10,10,10,0.96)), url(/images/shows-bg.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
         }}
       >
-        <div className="flex justify-between items-end mb-14 border-b border-line pb-5">
-          <h2 className="font-display uppercase text-4xl md:text-5xl tracking-tight">
+        <div className="flex justify-between items-end mb-12 border-b border-line pb-5">
+          <h2 className="font-display uppercase text-4xl md:text-6xl tracking-tight">
             Shows
           </h2>
-          <span className="font-mono-brand text-bone-dim text-sm">Events / 04</span>
+          <span className="font-mono-brand text-bone-dim text-sm">04</span>
         </div>
         {shows.length === 0 ? (
           <p className="text-bone-dim text-sm max-w-md">
@@ -359,33 +335,33 @@ export default async function Home() {
       </section>
 
       {/* SHOP */}
-      <section id="shop" className="px-6 md:px-10 py-24 md:py-32">
-        <div className="flex justify-between items-end mb-14 border-b border-line pb-5">
-          <h2 className="font-display uppercase text-4xl md:text-5xl tracking-tight">
+      <section id="shop" className="px-6 md:px-10 py-20 md:py-28">
+        <div className="flex justify-between items-end mb-12 border-b border-line pb-5">
+          <h2 className="font-display uppercase text-4xl md:text-6xl tracking-tight">
             Store
           </h2>
-          <span className="font-mono-brand text-bone-dim text-sm">Merch / 05</span>
+          <span className="font-mono-brand text-bone-dim text-sm">05</span>
         </div>
         {products.length === 0 ? (
           <p className="text-bone-dim text-sm">
             No products listed yet — add some from the admin dashboard.
           </p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5">
             {products.map((p) => {
               const card = (
-                <div className="border border-line">
-                  <div className="relative aspect-square bg-bone/5">
+                <div className="group">
+                  <div className="relative aspect-square bg-bone/5 overflow-hidden">
                     {p.image_url && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.image_url}
                         alt={p.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                       />
                     )}
                   </div>
-                  <div className="p-4 flex justify-between items-center">
+                  <div className="pt-3 flex justify-between items-center">
                     <span className="text-sm font-semibold">{p.name}</span>
                     <span className="font-mono-brand text-sm text-gold">
                       {formatPrice(p.price_cents)}
