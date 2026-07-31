@@ -6,22 +6,28 @@ export default async function AdminDashboard() {
 
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/admin/login')
+  if (userError || !user) {
+    redirect('/admin/login?error=no_session')
   }
 
-  const { data: adminRow } = await supabase
+  const { data: adminRow, error: adminError } = await supabase
     .from('admins')
     .select('user_id')
     .eq('user_id', user.id)
     .maybeSingle()
 
+  if (adminError) {
+    // The query itself failed (RLS, connection, etc) — show the real reason
+    // instead of silently bouncing back to login.
+    redirect(`/admin/login?error=admin_query_failed&detail=${encodeURIComponent(adminError.message)}`)
+  }
+
   if (!adminRow) {
-    // Logged in, but not on the admin roster — sign them out and bounce.
     await supabase.auth.signOut()
-    redirect('/admin/login')
+    redirect('/admin/login?error=not_admin')
   }
 
   return (

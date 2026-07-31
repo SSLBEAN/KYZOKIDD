@@ -33,6 +33,7 @@ export async function proxy(request: NextRequest) {
   if (isAdminRoute && !isLoginRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
+    url.searchParams.set('error', 'no_session')
     return NextResponse.redirect(url)
   }
 
