@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function AdminLoginPage() {
-  const router = useRouter()
   const supabase = createClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,8 +23,9 @@ export default function AdminLoginPage() {
       return
     }
 
-    router.push('/admin')
-    router.refresh()
+    // Full page reload (not client-side router.push) so the server
+    // sees the freshly-set session cookie on the very next request.
+    window.location.href = '/admin'
   }
 
   return (

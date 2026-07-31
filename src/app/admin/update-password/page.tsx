@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function UpdatePasswordPage() {
-  const router = useRouter()
   const supabase = createClient()
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +20,7 @@ export default function UpdatePasswordPage() {
       return
     }
     setDone(true)
-    setTimeout(() => router.push('/admin'), 1200)
+    setTimeout(() => { window.location.href = '/admin' }, 1200)
   }
 
   return (
