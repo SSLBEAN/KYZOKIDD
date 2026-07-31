@@ -28,9 +28,12 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-  const isLoginRoute = request.nextUrl.pathname.startsWith('/admin/login')
+  const publicAdminPaths = ['/admin/login', '/admin/reset-password', '/admin/update-password']
+  const isPublicAdminRoute = publicAdminPaths.some((p) =>
+    request.nextUrl.pathname.startsWith(p)
+  )
 
-  if (isAdminRoute && !isLoginRoute && !user) {
+  if (isAdminRoute && !isPublicAdminRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
     url.searchParams.set('error', 'no_session')
