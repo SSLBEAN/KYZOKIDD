@@ -21,6 +21,22 @@ export function SiteFooter() {
               Instagram
             </a>
             <a
+              href="https://www.tiktok.com/@kyzokiddofficial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-bone-dim hover:text-bone text-sm"
+            >
+              TikTok
+            </a>
+            <a
+              href="https://x.com/kyzokidd"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-bone-dim hover:text-bone text-sm"
+            >
+              X
+            </a>
+            <a
               href="https://youtube.com/@kyzokiddofficial"
               target="_blank"
               rel="noopener noreferrer"
@@ -59,7 +75,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="flex justify-between text-bone-dim font-mono-brand text-xs pt-7 border-t border-line">
-        <span>© {new Date().getFullYear()} KYZOKIDD / RNF — REAL NEVER FAIL</span>
+        <span>© {new Date().getFullYear()} KYZOKIDD</span>
         <span>NEW JERSEY</span>
       </div>
     </footer>

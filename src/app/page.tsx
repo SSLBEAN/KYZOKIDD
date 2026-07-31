@@ -17,8 +17,9 @@ const FALLBACK_TICKER = [
 
 const FALLBACK_VIDEOS: Video[] = [
   { id: "f1", title: "FOREVER", youtube_video_id: "wdNDeSRIRjc", release_id: null, is_featured: true, sort_order: 0 },
-  { id: "f2", title: "Best That Ever Did This", youtube_video_id: "OF3eFqJNTOE", release_id: null, is_featured: false, sort_order: 1 },
-  { id: "f3", title: "Abandonment Issues", youtube_video_id: "-dr7X6v6vdk", release_id: null, is_featured: false, sort_order: 2 },
+  { id: "f2", title: "Abandonment Issues", youtube_video_id: "-dr7X6v6vdk", release_id: null, is_featured: false, sort_order: 1 },
+  { id: "f3", title: "Music Video", youtube_video_id: "bOUiHNUeMUU", release_id: null, is_featured: false, sort_order: 2 },
+  { id: "f4", title: "Music Video", youtube_video_id: "D3K8jpKq27c", release_id: null, is_featured: false, sort_order: 3 },
 ];
 
 function formatPrice(cents: number | null) {
@@ -65,7 +66,7 @@ export default async function Home() {
   const products = (productsRes.data ?? []) as Product[];
 
   const featuredVideo = videos.find((v) => v.is_featured) ?? videos[0];
-  const sideVideos = videos.filter((v) => v.id !== featuredVideo?.id).slice(0, 2);
+  const sideVideos = videos.filter((v) => v.id !== featuredVideo?.id).slice(0, 3);
 
   const ticker = releases.length
     ? releases.map((r) => r.title.toUpperCase())
@@ -82,7 +83,7 @@ export default async function Home() {
           alt="Kyzo Kidd"
           fill
           priority
-          className="object-cover object-[center_18%]"
+          className="object-cover object-[center_20%] grayscale"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/10 to-bg/50" />
         <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 pb-10 md:pb-14">
@@ -91,7 +92,7 @@ export default async function Home() {
           </h1>
           <div className="flex justify-between items-end mt-3">
             <p className="font-mono-brand text-[11px] md:text-sm tracking-[2px] text-bone-dim uppercase">
-              New Jersey · RNF ★ Real Never Fail
+              New Jersey · RNF ★ real never fail
             </p>
             <Link
               href="#music"
@@ -157,6 +158,9 @@ export default async function Home() {
           <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold mb-5">
             About / 02
           </span>
+          <p className="font-mono-brand text-xs text-bone-dim mb-4">
+            Englewood, NJ · 6 Years Active
+          </p>
           <div className="space-y-5 text-bone-dim text-base leading-[1.85] max-w-md">
             <p>
               With a fearless commitment to truth and raw emotion,{" "}
@@ -182,21 +186,44 @@ export default async function Home() {
                 )
               )}
             </div>
+            <Link
+              href="/press"
+              className="inline-block text-xs uppercase tracking-wider text-bone-dim hover:text-bone pt-2"
+            >
+              Full Press Kit / EPK →
+            </Link>
           </div>
         </div>
       </section>
 
       {/* RNF STRIP */}
       <div className="bg-violet border-y border-line">
-        <div className="flex justify-between items-center flex-wrap gap-5 px-6 md:px-10 py-12">
-          <h3 className="font-display text-2xl md:text-4xl">
-            RNF <span className="text-gold">★</span> Real Never Fail
-          </h3>
-          <p className="font-mono-brand text-sm text-bone/75 leading-relaxed">
-            Collective: Anagi · CapoBeatz · Hoodie Bubby · Jailynn · Trxst
+        <div className="grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-16 items-center px-6 md:px-10 py-14 md:py-16">
+          <h3 className="font-display text-3xl md:text-5xl leading-none">
+            RNF <span className="text-gold">★</span>
             <br />
-            Mgmt: @itzcapobeatz_
-          </p>
+            real never fail
+          </h3>
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-bone/50">
+                Collective
+              </span>
+              <ul className="mt-3 space-y-1.5 text-sm text-bone/85">
+                <li>Anagi</li>
+                <li>CapoBeatz</li>
+                <li>Hoodie Bubby</li>
+                <li>Jailynn</li>
+                <li>Trxst</li>
+              </ul>
+            </div>
+            <div>
+              <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-bone/50">
+                Management
+              </span>
+              <p className="mt-3 text-sm text-bone/85">@itzcapobeatz_</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -260,9 +287,12 @@ export default async function Home() {
             <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
               Press / EPK
             </span>
-            <h3 className="font-display text-3xl mt-3">
-              One-sheet, photos, contact
-            </h3>
+            <Link
+              href="/press"
+              className="block font-display text-3xl mt-3 hover:text-blood-bright transition-colors"
+            >
+              One-sheet, photos, contact →
+            </Link>
           </div>
           <div>
             <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">

@@ -9,12 +9,14 @@ const LINKS = [
   ["About", "/#about"],
   ["Shows", "/#shows"],
   ["Store", "/#shop"],
-  ["Press", "/#press"],
+  ["Press", "/press"],
   ["Sign Up", "/#signup"],
 ];
 
 const SOCIALS = [
   ["Instagram", "https://www.instagram.com/kyzokidd/"],
+  ["TikTok", "https://www.tiktok.com/@kyzokiddofficial"],
+  ["X", "https://x.com/kyzokidd"],
   ["YouTube", "https://youtube.com/@kyzokiddofficial"],
   ["Spotify", "https://open.spotify.com/artist/6BFK2whBZLZa9E1YjNSrJi"],
   ["SoundCloud", "https://on.soundcloud.com/n82H7RJlqD80BEIVBg"],
