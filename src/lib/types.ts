@@ -50,3 +50,16 @@ export type PressAsset = {
   asset_type: string
   sort_order: number
 }
+
+export type SiteSettings = {
+  id: number
+  site_title: string
+  about_text: string | null
+  logo_url: string | null
+  accent_hex: string
+}
+
+export type SiteMedia = {
+  slot: string
+  image_url: string | null
+}

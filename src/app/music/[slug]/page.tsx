@@ -23,6 +23,13 @@ export default async function ReleasePage({
 
   if (!release) notFound();
 
+  const { data: settingsData } = await supabase
+    .from("site_settings")
+    .select("logo_url")
+    .eq("id", 1)
+    .maybeSingle();
+  const logoUrl = (settingsData as { logo_url: string | null } | null)?.logo_url;
+
   const r = release as Release;
 
   const links = [
@@ -34,7 +41,7 @@ export default async function ReleasePage({
 
   return (
     <>
-      <SiteNav />
+      <SiteNav logoUrl={logoUrl} />
       <section className="px-6 md:px-10 pt-32 md:pt-40 pb-24 max-w-4xl mx-auto">
         <Link href="/#music" className="text-bone-dim hover:text-bone text-sm">
           ← Back to Music

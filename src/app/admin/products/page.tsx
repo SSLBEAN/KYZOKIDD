@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminNav } from '@/components/AdminNav'
+import { ImageUrlField } from '@/components/ImageUrlField'
 import { saveProduct, deleteProduct } from '@/app/admin/actions'
 import type { Product } from '@/lib/types'
 
@@ -117,15 +118,11 @@ export default async function AdminProductsPage({
             />
           </div>
 
-          <div>
-            <label className={labelClass}>Image URL</label>
-            <input
-              name="image_url"
-              defaultValue={editing?.image_url ?? ''}
-              placeholder="https://…"
-              className={inputClass}
-            />
-          </div>
+          <ImageUrlField
+            name="image_url"
+            label="Product image"
+            defaultValue={editing?.image_url ?? ''}
+          />
 
           <div>
             <label className={labelClass}>Buy URL (optional for now)</label>

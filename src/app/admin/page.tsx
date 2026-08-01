@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
 
   const { data: adminRow, error: adminError } = await supabase
     .from('admins')
-    .select('user_id')
+    .select('user_id, username')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -50,7 +50,9 @@ export default async function AdminDashboard() {
     <main className="min-h-screen bg-bg text-bone p-6 md:p-10">
       <AdminNav current="/admin" />
       <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-      <p className="text-bone-dim mb-8">Signed in as {user.email}</p>
+      <p className="text-bone-dim mb-8">
+        Welcome, {(adminRow as { username: string | null }).username ?? user.email}
+      </p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {cards.map(([label, href, count]) => {
           const inner = (

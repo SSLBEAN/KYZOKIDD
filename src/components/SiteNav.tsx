@@ -22,7 +22,7 @@ const SOCIALS = [
   ["SoundCloud", "https://on.soundcloud.com/n82H7RJlqD80BEIVBg"],
 ];
 
-export function SiteNav() {
+export function SiteNav({ logoUrl }: { logoUrl?: string | null }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -35,9 +35,16 @@ export function SiteNav() {
         <Link
           href="/"
           onClick={() => setOpen(false)}
-          className="font-display text-lg tracking-wide mix-blend-difference text-white"
+          className="mix-blend-difference"
         >
-          KYZO<span className="text-blood-bright">KIDD</span>
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt="Logo" className="h-8 w-auto" />
+          ) : (
+            <span className="font-display text-lg tracking-wide text-white">
+              KYZO<span className="text-blood-bright">KIDD</span>
+            </span>
+          )}
         </Link>
         <button
           type="button"

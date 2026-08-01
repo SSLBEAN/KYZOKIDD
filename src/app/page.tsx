@@ -5,6 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Marquee } from "@/components/Marquee";
 import { PhotoGallery } from "@/components/PhotoGallery";
+import { VideoGrid } from "@/components/VideoGrid";
 import type { Product, Release, Show, Video } from "@/lib/types";
 
 const FALLBACK_TICKER = [
@@ -38,7 +39,7 @@ function formatShowDate(iso: string) {
 export default async function Home() {
   const supabase = await createClient();
 
-  const [releasesRes, videosRes, showsRes, productsRes] = await Promise.all([
+  const [releasesRes, videosRes, showsRes, productsRes, mediaRes, settingsRes] = await Promise.all([
     supabase
       .from("releases")
       .select("*")
@@ -56,6 +57,8 @@ export default async function Home() {
       .select("*")
       .eq("is_available", true)
       .order("sort_order", { ascending: true }),
+    supabase.from("site_media").select("slot, image_url"),
+    supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
   ]);
 
   const releases = (releasesRes.data ?? []) as Release[];
@@ -65,8 +68,19 @@ export default async function Home() {
   const shows = (showsRes.data ?? []) as Show[];
   const products = (productsRes.data ?? []) as Product[];
 
-  const featuredVideo = videos.find((v) => v.is_featured) ?? videos[0];
-  const sideVideos = videos.filter((v) => v.id !== featuredVideo?.id).slice(0, 3);
+  const mediaMap = new Map(
+    ((mediaRes.data ?? []) as { slot: string; image_url: string | null }[]).map((m) => [
+      m.slot,
+      m.image_url,
+    ])
+  );
+  const img = (slot: string, fallback: string) => mediaMap.get(slot) || fallback;
+
+  const settings = settingsRes.data as {
+    about_text: string | null;
+    logo_url: string | null;
+  } | null;
+  const aboutText = settings?.about_text?.trim();
 
   const ticker = releases.length
     ? releases.map((r) => r.title.toUpperCase())
@@ -74,15 +88,16 @@ export default async function Home() {
 
   return (
     <>
-      <SiteNav />
+      <SiteNav logoUrl={settings?.logo_url} />
 
       {/* HERO — full bleed, minimal chrome, cinematic */}
       <section className="relative h-screen">
         <Image
-          src="/images/hero.jpg"
+          src={img("hero", "/images/hero.jpg")}
           alt="Kyzo Kidd"
           fill
           priority
+          unoptimized
           className="object-cover object-[center_20%] grayscale"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/10 to-bg/50" />
@@ -107,7 +122,16 @@ export default async function Home() {
       <Marquee items={ticker} />
 
       {/* PHOTO GALLERY — OVO-style mosaic */}
-      <PhotoGallery />
+      <PhotoGallery
+        overrides={{
+          gallery_1: mediaMap.get("gallery_1") ?? null,
+          gallery_2: mediaMap.get("gallery_2") ?? null,
+          gallery_3: mediaMap.get("gallery_3") ?? null,
+          gallery_4: mediaMap.get("gallery_4") ?? null,
+          gallery_5: mediaMap.get("gallery_5") ?? null,
+          gallery_6: mediaMap.get("gallery_6") ?? null,
+        }}
+      />
 
       {/* MUSIC */}
       <section id="music" className="px-6 md:px-10 py-20 md:py-28">
@@ -148,9 +172,10 @@ export default async function Home() {
       <section id="about" className="grid md:grid-cols-2">
         <div className="relative aspect-square md:aspect-auto md:min-h-[600px]">
           <Image
-            src="/images/about.jpg"
+            src={img("about", "/images/about.jpg")}
             alt="Kyzo Kidd portrait"
             fill
+            unoptimized
             className="object-cover object-[center_15%]"
           />
         </div>
@@ -162,18 +187,24 @@ export default async function Home() {
             Englewood, NJ · 6 Years Active
           </p>
           <div className="space-y-5 text-bone-dim text-base leading-[1.85] max-w-md">
-            <p>
-              With a fearless commitment to truth and raw emotion,{" "}
-              <strong className="text-bone font-semibold">Kyzo Kidd</strong> is
-              carving his own lane in contemporary music. Hailing from the
-              streets of New Jersey, his sound is shaped by a life of
-              hardship, resilience, and unwavering determination.
-            </p>
-            <p>
-              Blending hip-hop, R&amp;B, pop, and beyond, his music reflects a
-              journey of overcoming sorrow and neglect while embracing
-              self-empowerment — turning pain into power, track after track.
-            </p>
+            {aboutText ? (
+              <p className="whitespace-pre-line">{aboutText}</p>
+            ) : (
+              <>
+                <p>
+                  With a fearless commitment to truth and raw emotion,{" "}
+                  <strong className="text-bone font-semibold">Kyzo Kidd</strong> is
+                  carving his own lane in contemporary music. Hailing from the
+                  streets of New Jersey, his sound is shaped by a life of
+                  hardship, resilience, and unwavering determination.
+                </p>
+                <p>
+                  Blending hip-hop, R&amp;B, pop, and beyond, his music reflects a
+                  journey of overcoming sorrow and neglect while embracing
+                  self-empowerment — turning pain into power, track after track.
+                </p>
+              </>
+            )}
             <div className="flex flex-wrap gap-2.5 pt-2">
               {["Kanye West", "Michael Jackson", "Tory Lanez", "Juice WRLD"].map(
                 (name) => (
@@ -228,7 +259,7 @@ export default async function Home() {
       </div>
 
       {/* VIDEOS */}
-      {featuredVideo && (
+      {videos.length > 0 && (
         <section id="videos" className="px-6 md:px-10 py-20 md:py-28">
           <div className="flex justify-between items-end mb-12 border-b border-line pb-5">
             <h2 className="font-display uppercase text-4xl md:text-6xl tracking-tight">
@@ -236,76 +267,44 @@ export default async function Home() {
             </h2>
             <span className="font-mono-brand text-bone-dim text-sm">03</span>
           </div>
-          <div className="grid md:grid-cols-[1.3fr_1fr] gap-6">
-            <div className="relative aspect-video overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${featuredVideo.youtube_video_id}`}
-                title={featuredVideo.title}
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
-            <div className="flex flex-col gap-6">
-              {sideVideos.map((v) => (
-                <a
-                  key={v.id}
-                  href={`https://www.youtube.com/watch?v=${v.youtube_video_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative aspect-video overflow-hidden block group"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://img.youtube.com/vi/${v.youtube_video_id}/hqdefault.jpg`}
-                    alt={v.title}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                  />
-                  <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-blood/85 flex items-center justify-center text-sm">
-                    ▶
-                  </span>
-                  <span className="absolute bottom-0 left-0 right-0 px-3.5 py-3 bg-gradient-to-t from-black/85 to-transparent text-sm font-semibold">
-                    {v.title}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
+          <VideoGrid videos={videos} />
         </section>
       )}
 
-      {/* PRESS / CONTACT — full bleed photo strip */}
-      <section id="press" className="relative min-h-[50vh] flex items-end">
+      {/* PRESS / EPK — full bleed photo */}
+      <section id="press" className="relative min-h-[45vh] flex items-end">
         <Image
-          src="/images/press.jpg"
+          src={img("press", "/images/press.jpg")}
           alt=""
           fill
-          className="object-cover object-[center_20%]"
+          unoptimized
+          className="object-cover object-[center_20%] grayscale"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-bg/10" />
-        <div className="relative px-6 md:px-10 pb-16 grid md:grid-cols-2 gap-10 w-full">
-          <div>
-            <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
-              Press / EPK
-            </span>
-            <Link
-              href="/press"
-              className="block font-display text-3xl mt-3 hover:text-blood-bright transition-colors"
-            >
-              One-sheet, photos, contact →
-            </Link>
-          </div>
-          <div>
-            <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
-              Booking &amp; Inquiries
-            </span>
-            <a
-              href="mailto:kyzokiddmusic@gmail.com"
-              className="block font-display text-3xl mt-3 hover:text-blood-bright transition-colors"
-            >
-              kyzokiddmusic@gmail.com
-            </a>
-          </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/50 to-bg/20" />
+        <div className="relative px-6 md:px-10 py-12 w-full">
+          <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
+            Press / EPK
+          </span>
+          <Link
+            href="/press"
+            className="block font-display text-3xl md:text-4xl mt-3 hover:text-blood-bright transition-colors max-w-lg"
+          >
+            One-sheet, photos, contact →
+          </Link>
         </div>
+      </section>
+
+      {/* CONTACT — separate, plain block, no photo competing for attention */}
+      <section className="px-6 md:px-10 py-14 border-y border-line">
+        <span className="font-mono-brand text-[11px] uppercase tracking-[2px] text-gold">
+          Booking &amp; Inquiries
+        </span>
+        <a
+          href="mailto:kyzokiddmusic@gmail.com"
+          className="block font-display text-2xl sm:text-3xl md:text-4xl mt-3 hover:text-blood-bright transition-colors break-words"
+        >
+          kyzokiddmusic@gmail.com
+        </a>
       </section>
 
       {/* SHOWS */}
@@ -313,8 +312,10 @@ export default async function Home() {
         id="shows"
         className="px-6 md:px-10 py-20 md:py-28 relative"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(10,10,10,0.9), rgba(10,10,10,0.96)), url(/images/shows-bg.jpg)",
+          backgroundImage: `linear-gradient(rgba(10,10,10,0.9), rgba(10,10,10,0.96)), url(${img(
+            "shows_bg",
+            "/images/shows-bg.jpg"
+          )})`,
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
         }}

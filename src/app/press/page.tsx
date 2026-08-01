@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "Press Kit / EPK — KYZOKIDD",
@@ -23,16 +24,26 @@ function Section({
   );
 }
 
-export default function PressPage() {
+export default async function PressPage() {
+  const supabase = await createClient();
+  const [{ data: settingsData }, { data: mediaData }] = await Promise.all([
+    supabase.from("site_settings").select("logo_url").eq("id", 1).maybeSingle(),
+    supabase.from("site_media").select("image_url").eq("slot", "press").maybeSingle(),
+  ]);
+  const logoUrl = (settingsData as { logo_url: string | null } | null)?.logo_url;
+  const pressImage =
+    (mediaData as { image_url: string | null } | null)?.image_url || "/images/press.jpg";
+
   return (
     <>
-      <SiteNav />
+      <SiteNav logoUrl={logoUrl} />
 
       <section className="relative h-[55vh] min-h-[380px] flex items-end">
         <Image
-          src="/images/press.jpg"
+          src={pressImage}
           alt="Kyzo Kidd"
           fill
+          unoptimized
           priority
           className="object-cover object-[center_20%] grayscale"
         />

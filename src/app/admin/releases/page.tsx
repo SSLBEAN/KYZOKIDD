@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminNav } from '@/components/AdminNav'
+import { ImageUrlField } from '@/components/ImageUrlField'
 import { saveRelease, deleteRelease } from '@/app/admin/actions'
 import type { Release } from '@/lib/types'
 
@@ -127,15 +128,11 @@ export default async function AdminReleasesPage({
             />
           </div>
 
-          <div>
-            <label className={labelClass}>Cover image URL</label>
-            <input
-              name="cover_image_url"
-              defaultValue={editing?.cover_image_url ?? ''}
-              placeholder="https://…"
-              className={inputClass}
-            />
-          </div>
+          <ImageUrlField
+            name="cover_image_url"
+            label="Cover image"
+            defaultValue={editing?.cover_image_url ?? ''}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <div>

@@ -153,3 +153,83 @@ export async function signOutAdmin() {
   await supabase.auth.signOut()
   redirect('/admin/login')
 }
+
+// ---------- Site settings ----------
+export async function saveSiteSettings(formData: FormData) {
+  const supabase = await createClient()
+
+  const payload = {
+    site_title: String(formData.get('site_title') || 'KYZOKIDD').trim(),
+    about_text: String(formData.get('about_text') || '') || null,
+    logo_url: String(formData.get('logo_url') || '') || null,
+    accent_hex: String(formData.get('accent_hex') || '#b3241f'),
+  }
+
+  await supabase.from('site_settings').update(payload).eq('id', 1)
+  revalidatePath('/admin/settings')
+  revalidatePath('/')
+  revalidatePath('/press')
+}
+
+// ---------- Site media (hero, about, gallery, etc images) ----------
+export async function saveSiteMediaSlot(slot: string, imageUrl: string | null) {
+  const supabase = await createClient()
+  await supabase
+    .from('site_media')
+    .update({ image_url: imageUrl, updated_at: new Date().toISOString() })
+    .eq('slot', slot)
+  revalidatePath('/admin/media')
+  revalidatePath('/')
+  revalidatePath('/press')
+}
+
+// ---------- Invite a new admin ----------
+export async function inviteAdmin(
+  _prevState: { ok: boolean; message: string } | null,
+  formData: FormData
+): Promise<{ ok: boolean; message: string }> {
+  const email = String(formData.get('email') || '').trim()
+  const username = String(formData.get('username') || '').trim()
+
+  if (!email || !email.includes('@')) {
+    return { ok: false, message: 'Enter a valid email.' }
+  }
+  if (!username) {
+    return { ok: false, message: 'Enter a username.' }
+  }
+
+  // Confirm the caller is actually an admin before using elevated access.
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { ok: false, message: 'Not signed in.' }
+
+  const { data: adminRow } = await supabase
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+  if (!adminRow) return { ok: false, message: 'Not authorized.' }
+
+  const { createAdminClient } = await import('@/lib/supabase/admin')
+  const adminClient = createAdminClient()
+
+  const { data: invited, error: inviteError } =
+    await adminClient.auth.admin.inviteUserByEmail(email)
+
+  if (inviteError || !invited.user) {
+    return { ok: false, message: inviteError?.message || 'Invite failed.' }
+  }
+
+  const { error: insertError } = await adminClient
+    .from('admins')
+    .insert({ user_id: invited.user.id, username })
+
+  if (insertError) {
+    return { ok: false, message: insertError.message }
+  }
+
+  revalidatePath('/admin/team')
+  return { ok: true, message: `Invited ${email} as "${username}".` }
+}

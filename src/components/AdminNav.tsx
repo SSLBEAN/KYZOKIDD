@@ -8,6 +8,9 @@ export function AdminNav({ current }: { current?: string }) {
     ["Videos", "/admin/videos"],
     ["Shows", "/admin/shows"],
     ["Products", "/admin/products"],
+    ["Site Photos", "/admin/media"],
+    ["Settings", "/admin/settings"],
+    ["Team", "/admin/team"],
   ];
 
   return (
