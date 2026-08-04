@@ -39,7 +39,7 @@ function formatShowDate(iso: string) {
 export default async function Home() {
   const supabase = await createClient();
 
-  const [releasesRes, videosRes, showsRes, productsRes, mediaRes, settingsRes] = await Promise.all([
+  const [releasesRes, videosRes, showsRes, productsRes, mediaRes, settingsRes, rnfRes] = await Promise.all([
     supabase
       .from("releases")
       .select("*")
@@ -59,6 +59,7 @@ export default async function Home() {
       .order("sort_order", { ascending: true }),
     supabase.from("site_media").select("slot, image_url"),
     supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
+    supabase.from("rnf_members").select("name").order("sort_order", { ascending: true }),
   ]);
 
   const releases = (releasesRes.data ?? []) as Release[];
@@ -66,6 +67,9 @@ export default async function Home() {
     ? (videosRes.data as Video[])
     : FALLBACK_VIDEOS;
   const shows = (showsRes.data ?? []) as Show[];
+  const rnfMembers = ((rnfRes.data ?? []) as { name: string }[]).length
+    ? (rnfRes.data as { name: string }[]).map((m) => m.name)
+    : ["Anagi", "CapoBeatz", "Hoodie Bubby", "Jailynn", "Trxst"];
   const products = (productsRes.data ?? []) as Product[];
 
   const mediaMap = new Map(
@@ -241,11 +245,9 @@ export default async function Home() {
                 Collective
               </span>
               <ul className="mt-3 space-y-1.5 text-sm text-bone/85">
-                <li>Anagi</li>
-                <li>CapoBeatz</li>
-                <li>Hoodie Bubby</li>
-                <li>Jailynn</li>
-                <li>Trxst</li>
+                {rnfMembers.map((name) => (
+                  <li key={name}>{name}</li>
+                ))}
               </ul>
             </div>
             <div>

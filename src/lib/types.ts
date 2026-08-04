@@ -57,9 +57,30 @@ export type SiteSettings = {
   about_text: string | null
   logo_url: string | null
   accent_hex: string
+  welcome_email_subject: string | null
+  welcome_email_body: string | null
 }
 
 export type SiteMedia = {
   slot: string
   image_url: string | null
+}
+
+export type RnfMember = {
+  id: string
+  name: string
+  sort_order: number
+}
+
+export type EpkContent = {
+  short_bio: string | null
+  full_bio: string | null
+  quote: string | null
+  achievements: string | null
+  influences: string | null
+  style_text: string | null
+  colors_text: string | null
+  manager_name: string | null
+  manager_phone: string | null
+  pdf_url: string | null
 }

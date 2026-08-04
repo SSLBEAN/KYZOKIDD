@@ -163,6 +163,8 @@ export async function saveSiteSettings(formData: FormData) {
     about_text: String(formData.get('about_text') || '') || null,
     logo_url: String(formData.get('logo_url') || '') || null,
     accent_hex: String(formData.get('accent_hex') || '#b3241f'),
+    welcome_email_subject: String(formData.get('welcome_email_subject') || '') || null,
+    welcome_email_body: String(formData.get('welcome_email_body') || '') || null,
   }
 
   await supabase.from('site_settings').update(payload).eq('id', 1)
@@ -232,4 +234,54 @@ export async function inviteAdmin(
 
   revalidatePath('/admin/team')
   return { ok: true, message: `Invited ${email} as "${username}".` }
+}
+
+// ---------- RNF members ----------
+export async function saveRnfMember(formData: FormData) {
+  const supabase = await createClient()
+  const id = String(formData.get('id') || '')
+  const payload = {
+    name: String(formData.get('name') || '').trim(),
+    sort_order: parseInt(String(formData.get('sort_order') || '0'), 10) || 0,
+  }
+
+  if (id) {
+    await supabase.from('rnf_members').update(payload).eq('id', id)
+  } else {
+    await supabase.from('rnf_members').insert(payload)
+  }
+
+  revalidatePath('/admin/rnf')
+  revalidatePath('/')
+}
+
+export async function deleteRnfMember(formData: FormData) {
+  const supabase = await createClient()
+  const id = String(formData.get('id') || '')
+  await supabase.from('rnf_members').delete().eq('id', id)
+  revalidatePath('/admin/rnf')
+  revalidatePath('/')
+}
+
+// ---------- EPK content ----------
+export async function saveEpkContent(formData: FormData) {
+  const supabase = await createClient()
+
+  const payload = {
+    short_bio: String(formData.get('short_bio') || '') || null,
+    full_bio: String(formData.get('full_bio') || '') || null,
+    quote: String(formData.get('quote') || '') || null,
+    achievements: String(formData.get('achievements') || '') || null,
+    influences: String(formData.get('influences') || '') || null,
+    style_text: String(formData.get('style_text') || '') || null,
+    colors_text: String(formData.get('colors_text') || '') || null,
+    manager_name: String(formData.get('manager_name') || '') || null,
+    manager_phone: String(formData.get('manager_phone') || '') || null,
+    pdf_url: String(formData.get('pdf_url') || '') || null,
+  }
+
+  await supabase.from('epk_content').update(payload).eq('id', 1)
+  revalidatePath('/admin/epk')
+  revalidatePath('/press')
+  revalidatePath('/')
 }

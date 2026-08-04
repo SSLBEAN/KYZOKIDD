@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminNav } from '@/components/AdminNav'
+import { ThemePresets } from '@/components/ThemePresets'
 import { saveSiteSettings } from '@/app/admin/actions'
 import type { SiteSettings } from '@/lib/types'
 
@@ -29,10 +30,11 @@ export default async function AdminSettingsPage() {
       <AdminNav current="/admin/settings" />
       <h1 className="text-2xl font-bold mb-2">Site Settings</h1>
       <p className="text-bone-dim text-sm mb-8 max-w-xl">
-        Controls the site title, the About section text, the logo, and the
-        one accent color used across buttons and links. This isn&apos;t a
-        full page builder — layout and fonts stay as designed — but it covers
-        the text and branding you&apos;ll actually want to update yourself.
+        Controls the site title, the About section text, the logo, the
+        accent color, and the welcome email sent to new sign-ups. This
+        isn&apos;t a full page builder — layout and fonts stay as designed —
+        but it covers the text and branding you&apos;ll actually want to
+        update yourself.
       </p>
 
       <form
@@ -75,18 +77,27 @@ export default async function AdminSettingsPage() {
         </div>
 
         <div>
-          <label className={labelClass}>Accent color</label>
-          <div className="flex items-center gap-3">
-            <input
-              type="color"
-              name="accent_hex"
-              defaultValue={settings?.accent_hex ?? '#b3241f'}
-              className="w-12 h-10 bg-transparent border border-line rounded cursor-pointer"
-            />
-            <span className="text-bone-dim text-sm">
-              Used for buttons, links, and highlights
-            </span>
-          </div>
+          <label className={labelClass}>Accent color / theme</label>
+          <ThemePresets defaultHex={settings?.accent_hex ?? '#b3241f'} />
+        </div>
+
+        <div className="pt-4 border-t border-line">
+          <p className="text-sm font-semibold mb-3">Welcome email (sent on sign-up)</p>
+          <label className={labelClass}>Subject</label>
+          <input
+            name="welcome_email_subject"
+            defaultValue={settings?.welcome_email_subject ?? ''}
+            placeholder="Welcome to the KYZOKIDD list"
+            className={inputClass + ' mb-4'}
+          />
+          <label className={labelClass}>Body</label>
+          <textarea
+            name="welcome_email_body"
+            rows={4}
+            defaultValue={settings?.welcome_email_body ?? ''}
+            placeholder="Thanks for signing up — you'll be the first to hear about new music, videos, and shows."
+            className={inputClass}
+          />
         </div>
 
         <button

@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { sendEmail } from '@/lib/email'
 
 export async function subscribeEmail(
   _prevState: { ok: boolean; message: string } | null,
@@ -22,6 +23,22 @@ export async function subscribeEmail(
     }
     return { ok: false, message: 'Something went wrong — try again.' }
   }
+
+  const { data: settings } = await supabase
+    .from('site_settings')
+    .select('welcome_email_subject, welcome_email_body')
+    .eq('id', 1)
+    .maybeSingle()
+
+  const s = settings as { welcome_email_subject?: string; welcome_email_body?: string } | null
+
+  await sendEmail({
+    to: email,
+    subject: s?.welcome_email_subject || 'Welcome to the KYZOKIDD list',
+    text:
+      s?.welcome_email_body ||
+      "Thanks for signing up — you'll be the first to hear about new music, videos, and shows.",
+  })
 
   return { ok: true, message: "You're in. Thanks for signing up." }
 }
